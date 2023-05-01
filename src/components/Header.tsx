@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {AppBar, Box, Button, IconButton, Toolbar, Typography} from '@mui/material'
 import Link from 'next/link'
 import { Menu } from '@mui/icons-material'
 import { useRouter } from 'next/navigation'
+import HeaderDrawer from './HeaderDrawer'
 
 const Header = () => {
   const router = useRouter()
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const pageTitle = 'Painel Delivery'
 
   const handleLogout = () =>{
@@ -13,7 +15,7 @@ const Header = () => {
   }
 
   const handleDrawerToggle = () => {
-
+    setDrawerOpen(!drawerOpen)
   }
 
   return (
@@ -49,6 +51,14 @@ const Header = () => {
           </Box>
         </Toolbar>
       </AppBar>
+      <Box component='nav'>
+        <HeaderDrawer
+          open={drawerOpen}
+          onClose={handleDrawerToggle}
+          title={pageTitle}
+          onLogout={handleLogout}
+        />
+      </Box>
     </>
   )
 }

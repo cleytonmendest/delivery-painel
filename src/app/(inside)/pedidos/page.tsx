@@ -1,11 +1,30 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, CircularProgress, Grid, InputAdornment, Skeleton, TextField, Typography } from "@mui/material";
 import { Refresh, Search } from '@mui/icons-material';
+import { Order } from '@/types/Order';
+import { api } from '@/libs/api';
+import OrderItem from '@/components/OrderItem';
+import { OrderStatus } from '@/types/OrderStatus';
 
 const Page = () => {
   const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [orders, setOrders] = useState<Order[]>([])
+
+  const getOrders = async () =>{
+    setSearchInput('')
+    setOrders([])
+
+    setLoading(true)
+    const orderList: Order[] = await api.getOrders()
+    setOrders(orderList)
+    setLoading(false)
+  }
+
+  useEffect(()=>{
+    getOrders()
+  },[])
 
   const handleSearchInput = () => {
 
@@ -13,6 +32,11 @@ const Page = () => {
 
   const handleSearchKey = () => {
 
+  }
+
+  const handleChangeStatus = async (id: number, newStatus: OrderStatus) => {
+    await api.changeOrderStatus(id, newStatus)
+    getOrders()
   }
 
   return (
@@ -24,7 +48,7 @@ const Page = () => {
             <CircularProgress size={24}/>
           }
           {!loading &&
-            <Button size='small' sx={{ justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
+            <Button onClick={getOrders} size='small' sx={{ justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
               <Refresh />
               <Typography component='div' sx={{ color: '#555', display: { xs: 'none', sm: 'block' } }}>
                 Atualizar
@@ -69,6 +93,14 @@ const Page = () => {
             </Grid>
           </>
         }
+        {!loading && orders.map((item, index) =>(
+          <Grid key={index} item xs={1}>
+            <OrderItem
+              item={item}
+              onChangeStatus={handleChangeStatus}
+            />
+          </Grid>
+        ))}
       </Grid>
     </Box>
   )

@@ -7,9 +7,10 @@ import React from 'react'
 type Props = {
     item: Order
     onChangeStatus: (id: number, newStatus: OrderStatus) => void
+    onPrint: (order:Order) => void
 }
 
-const OrderItem = ({ item, onChangeStatus }: Props) => {
+const OrderItem = ({ item, onChangeStatus, onPrint }: Props) => {
 
     const getStatusBackground = (status: OrderStatus) => {
         const statuses = {
@@ -24,6 +25,10 @@ const OrderItem = ({ item, onChangeStatus }: Props) => {
         onChangeStatus(item.id, event.target.value as OrderStatus)
     }
 
+    const handlePrintButton = () => {
+        onPrint(item)
+    }
+
     return (
         <Box sx={{ border: '1px solid #EEE', color: '#FFF', borderRadius: 2, overflow: 'hidden' }}>
             <Box sx={{
@@ -36,7 +41,7 @@ const OrderItem = ({ item, onChangeStatus }: Props) => {
                 <Box>
                     <Typography component='p'>{dateFormat(item.orderDate)}</Typography>
                     <Typography component='p'>{item.userName}</Typography>
-                    <Button size='small' sx={{ color: '#FFF', p: 0 }}>Imprimir</Button>
+                    <Button onClick={handlePrintButton} size='small' sx={{ color: '#FFF', p: 0 }}>Imprimir</Button>
                 </Box>
                 <Box>
                     <Typography component='p' sx={{ fontSize: 24 }}>#{item.id}</Typography>

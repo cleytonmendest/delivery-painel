@@ -7,12 +7,28 @@ import { api } from '@/libs/api';
 import OrderItem from '@/components/OrderItem';
 import { OrderStatus } from '@/types/OrderStatus';
 import { dateFormat } from '@/libs/dateFormat';
+import { Product } from '@/types/Product';
+import { Category } from '@/types/Category';
+import ProductTableSkeleton from '@/components/ProductTableSkeleton';
 
 const Page = () => {
   const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState<Product[]>()
+  const [categorys, setCategorys] = useState<Category[]>()
+
+  useEffect(() => {
+    getProducts()
+  }, [])
 
 
-  const handleNewProduct = () =>{
+  const getProducts = async () => {
+    setLoading(true)
+    setProducts(await api.getProducts())
+    setCategorys(await api.getCategories())
+    setLoading(false)
+  }
+
+  const handleNewProduct = () => {
 
   }
   return (
@@ -25,16 +41,23 @@ const Page = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{width: 50, display:{xs: 'none', md: 'table-cell'}}}>ID:</TableCell>
+              <TableCell sx={{ width: 50, display: { xs: 'none', md: 'table-cell' } }}>ID:</TableCell>
               <TableCell>Imagem:</TableCell>
               <TableCell>Nome:</TableCell>
-              <TableCell sx={{display:{xs: 'none', md: 'table-cell'}}}>Preço:</TableCell>
-              <TableCell sx={{display:{xs: 'none', md: 'table-cell'}}}>Categoria:</TableCell>
-              <TableCell sx={{xs: 50, md: 130}}>Ações:</TableCell>
+              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Preço:</TableCell>
+              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Categoria:</TableCell>
+              <TableCell sx={{ xs: 50, md: 130 }}>Ações:</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-
+            {loading &&
+              <>
+                <ProductTableSkeleton />
+                <ProductTableSkeleton />
+                <ProductTableSkeleton />
+                <ProductTableSkeleton />
+              </>
+            }
           </TableBody>
         </Table>
 

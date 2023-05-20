@@ -10,6 +10,7 @@ import { dateFormat } from '@/libs/dateFormat';
 import { Product } from '@/types/Product';
 import { Category } from '@/types/Category';
 import ProductTableSkeleton from '@/components/ProductTableSkeleton';
+import ProductTableItem from '@/components/ProductTableItem';
 
 const Page = () => {
   const [loading, setLoading] = useState(false)
@@ -31,6 +32,14 @@ const Page = () => {
   const handleNewProduct = () => {
 
   }
+
+  const handleEditProduct = (product: Product) => {
+
+  }
+
+  const handleDeleteProduct = (product: Product) => {
+
+  }
   return (
     <>
       <Box sx={{ my: 3 }}>
@@ -46,7 +55,7 @@ const Page = () => {
               <TableCell>Nome:</TableCell>
               <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Preço:</TableCell>
               <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Categoria:</TableCell>
-              <TableCell sx={{ xs: 50, md: 130 }}>Ações:</TableCell>
+              <TableCell sx={{width: {xs: 50, md: 130}}}>Ações:</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -58,6 +67,14 @@ const Page = () => {
                 <ProductTableSkeleton />
               </>
             }
+            {!loading && products?.map((item)=>(
+              <ProductTableItem 
+                key={item.id}
+                item={item}
+                onEdit={handleEditProduct}
+                onDelete={handleDeleteProduct}
+              />
+            ))}
           </TableBody>
         </Table>
 

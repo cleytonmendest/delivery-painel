@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { Box, Button, CircularProgress, Grid, InputAdornment, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, InputAdornment, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { Refresh, Search } from '@mui/icons-material';
 import { Order } from '@/types/Order';
 import { api } from '@/libs/api';
@@ -16,6 +16,9 @@ const Page = () => {
   const [loading, setLoading] = useState(false)
   const [products, setProducts] = useState<Product[]>()
   const [categorys, setCategorys] = useState<Category[]>()
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<Product>()
+  const [loadingDelete, setLoadingDelete] = useState(false)
 
   useEffect(() => {
     getProducts()
@@ -37,9 +40,23 @@ const Page = () => {
 
   }
 
+  //Delete Product
   const handleDeleteProduct = (product: Product) => {
-
+    setShowDeleteDialog(true)
+    setProductToDelete(product)
   }
+
+  const handleConfirmDelete = async () => {
+    if(productToDelete){
+      setLoadingDelete(true)
+      await api.deleteProduct(productToDelete.id)
+      setLoadingDelete(false)
+      setShowDeleteDialog(false)
+      getProducts()
+
+    }
+  }
+
   return (
     <>
       <Box sx={{ my: 3 }}>
@@ -77,7 +94,16 @@ const Page = () => {
             ))}
           </TableBody>
         </Table>
-
+        <Dialog open={showDeleteDialog} onClose={() => !loadingDelete ? setShowDeleteDialog(false) : null}>
+          <DialogTitle>Tem certeza que deseja deletar este produto?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Esta ação é irreversível</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button disabled={loadingDelete} onClick={()=>setShowDeleteDialog(false)}>Não</Button>
+            <Button disabled={loadingDelete} onClick={handleConfirmDelete}>Sim</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   )

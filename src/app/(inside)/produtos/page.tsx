@@ -11,14 +11,20 @@ import { Product } from '@/types/Product';
 import { Category } from '@/types/Category';
 import ProductTableSkeleton from '@/components/ProductTableSkeleton';
 import ProductTableItem from '@/components/ProductTableItem';
+import ProductEditDialog from '@/components/ProductEditDialog';
 
 const Page = () => {
   const [loading, setLoading] = useState(false)
-  const [products, setProducts] = useState<Product[]>()
-  const [categorys, setCategorys] = useState<Category[]>()
+  const [products, setProducts] = useState<Product[]>([])
+  const [categorys, setCategorys] = useState<Category[]>([])
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [productToDelete, setProductToDelete] = useState<Product>()
   const [loadingDelete, setLoadingDelete] = useState(false)
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [productoEdit, setProductToEdit] = useState<Product>()
+  const [loadingEditDialog, setLoadingEditDialog] = useState(false)
 
   useEffect(() => {
     getProducts()
@@ -30,14 +36,6 @@ const Page = () => {
     setProducts(await api.getProducts())
     setCategorys(await api.getCategories())
     setLoading(false)
-  }
-
-  const handleNewProduct = () => {
-
-  }
-
-  const handleEditProduct = (product: Product) => {
-
   }
 
   //Delete Product
@@ -55,6 +53,22 @@ const Page = () => {
       getProducts()
 
     }
+  }
+
+  // New/edit product
+
+  const handleNewProduct = () => {
+    setProductToEdit(undefined)
+    setEditDialogOpen(true)
+  }
+
+  const handleEditProduct = (product: Product) => {
+    setProductToEdit(product)
+    setEditDialogOpen(true)
+  }
+
+  const handleSaveEditDialog = () => {
+
   }
 
   return (
@@ -104,6 +118,14 @@ const Page = () => {
             <Button disabled={loadingDelete} onClick={handleConfirmDelete}>Sim</Button>
           </DialogActions>
         </Dialog>
+        <ProductEditDialog
+          open={editDialogOpen}
+          onClose={() => setEditDialogOpen(false)}
+          onSave={handleSaveEditDialog}
+          disabled={loadingEditDialog}
+          product={productoEdit}
+          categories={categorys}
+        />
       </Box>
     </>
   )

@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, InputAdornment, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { Refresh, Search } from '@mui/icons-material';
 import { Order } from '@/types/Order';
@@ -45,7 +45,7 @@ const Page = () => {
   }
 
   const handleConfirmDelete = async () => {
-    if(productToDelete){
+    if (productToDelete) {
       setLoadingDelete(true)
       await api.deleteProduct(productToDelete.id)
       setLoadingDelete(false)
@@ -67,8 +67,20 @@ const Page = () => {
     setEditDialogOpen(true)
   }
 
-  const handleSaveEditDialog = () => {
+  const handleSaveEditDialog = async (event: FormEvent<HTMLFormElement>) => {
+    let form = new FormData(event.currentTarget)
 
+    setLoadingEditDialog(true)
+    if(productoEdit){
+      form.append('id', productoEdit.id.toString())
+      await api.updateProduct(form)
+    }else{
+      await api.createProduct(form)
+    }
+    setLoadingEditDialog(false)
+    setEditDialogOpen(false)
+
+    getProducts()
   }
 
   return (
@@ -86,7 +98,7 @@ const Page = () => {
               <TableCell>Nome:</TableCell>
               <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Preço:</TableCell>
               <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Categoria:</TableCell>
-              <TableCell sx={{width: {xs: 50, md: 130}}}>Ações:</TableCell>
+              <TableCell sx={{ width: { xs: 50, md: 130 } }}>Ações:</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -98,8 +110,8 @@ const Page = () => {
                 <ProductTableSkeleton />
               </>
             }
-            {!loading && products?.map((item)=>(
-              <ProductTableItem 
+            {!loading && products?.map((item) => (
+              <ProductTableItem
                 key={item.id}
                 item={item}
                 onEdit={handleEditProduct}
@@ -114,7 +126,7 @@ const Page = () => {
             <DialogContentText>Esta ação é irreversível</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button disabled={loadingDelete} onClick={()=>setShowDeleteDialog(false)}>Não</Button>
+            <Button disabled={loadingDelete} onClick={() => setShowDeleteDialog(false)}>Não</Button>
             <Button disabled={loadingDelete} onClick={handleConfirmDelete}>Sim</Button>
           </DialogActions>
         </Dialog>
